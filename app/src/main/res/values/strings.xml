@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">TabLayoutDemoActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="Tab1">Tab1Fragment</string>
+    <string name="buttonName">Add to Favourites</string>
+    <string name="rateButtonText">Rate This Place!</string>
+    <string name="permission">Permission Denied...</string>
+
+</resources>
