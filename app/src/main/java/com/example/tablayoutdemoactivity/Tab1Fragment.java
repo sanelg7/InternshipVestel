@@ -17,11 +17,21 @@ import androidx.core.content.IntentCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -40,6 +50,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -55,21 +69,69 @@ public class Tab1Fragment extends Fragment implements
         LocationListener {
 
     private OnFragmentInteractionListener mListener;
-    private GoogleMap mMap;
     private final int REQUEST_CODE = 2;
     private Context context;
     private GoogleApiClient googleApiClient;
-    private LocationRequest locationRequest;
-    private Location lastLocation;
-    private Marker currentUserLocationMarker;
     private static final int Request_User_Location_Code = 99;
-    /*Current Location
-    *
-    *
-    *
-    *
-    *
-    * */
+    private GoogleMap mMap;
+
+
+
+
+
+    //api
+    private String tag = "MainActivity";
+    private String lat = "lat=38.456";
+    private String lon = "lon=27.654";
+
+    private void startApiRequest() {
+
+        String url = "https://developers.zomato.com/api/v2.1/search?" + lat + "&" + lon + "&radius=1000&count=2&sort=real_distance";
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,url,
+                null, new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(tag, response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(tag, "Error: " + error.getMessage());
+                Log.e(tag, "Site Info Error: " + error.getMessage());
+
+            }
+        }) {
+
+            /**
+             * Passing some request headers
+             */
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                //headers.put("Content-Type", "application/json");
+                headers.put("user-key", "54fbdee9095012d3a2c61affb85b2f26");
+                return headers;
+            }
+        };
+
+        //şu an buradasın
+        try {
+            JSONObject reader = new JSONObject(queue.toString());
+            JSONObject restaurant = reader.getJSONObject("restaurant");
+            String name = restaurant.getString("name");
+            System.out.println(name);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        queue.add(req);
+        System.out.println((queue.toString()));
+        //Marker restMarkers ;
+        //for(int i=0;i<r)
+    }
 
     public Tab1Fragment() {
         // Required empty public constructor
@@ -82,13 +144,35 @@ public class Tab1Fragment extends Fragment implements
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_tab1, container, false);
          context = getContext();
+         Button button = view.findViewById(R.id.setMarkersButton);
+         button.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+                 startApiRequest();
+             }
+         });
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SuppoprtMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
+        final SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SuppoprtMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
         assert mapFragment != null;
 
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
-            public void onMapReady(GoogleMap mMap) {
+            public void onMapReady(GoogleMap googleMap) {
+
+                mMap = googleMap;
+
+
+
+                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+
+                    public void onInfoWindowClick(Marker marker) {
+
+
+                        Intent i = new Intent(context, DetailsActivity.class);
+                        startActivityForResult(i, REQUEST_CODE);
+
+                    }
+                });
 
               /*  mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
@@ -117,17 +201,16 @@ public class Tab1Fragment extends Fragment implements
                     }
                 });
 
-*/
-/*
-            if (ActivityCompat.checkSelfPermission
-                    (context,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(context,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+
+
 
 */
+
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
 
                     buildGoogleApiClient();
+
 
                     mMap.setMyLocationEnabled(true);
 
@@ -137,17 +220,16 @@ public class Tab1Fragment extends Fragment implements
                 }
             }
             });
-
+        startApiRequest();
         return view;
 
 
 
 
+
+
+
         }
-
-
-
-
                 public boolean checkUserLocationPermission(){
                 if(ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED){
@@ -161,9 +243,6 @@ public class Tab1Fragment extends Fragment implements
                     return true;
                 }
             }
-
-
-
 
             public void onRequestPermissionResult(int requestcode,@NonNull String[] permissions,@NonNull int[] grantResults){
                 switch (requestcode){
@@ -182,9 +261,6 @@ public class Tab1Fragment extends Fragment implements
                         }return;
                 }
             }
-
-
-
             protected synchronized void buildGoogleApiClient(){
                 googleApiClient =new GoogleApiClient.Builder(context)
                         .addConnectionCallbacks(Tab1Fragment.this)
@@ -194,17 +270,12 @@ public class Tab1Fragment extends Fragment implements
 
                 googleApiClient.connect();
             }
-
-
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
-
-
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -215,23 +286,21 @@ public class Tab1Fragment extends Fragment implements
                     + " must implement OnFragmentInteractionListener");
         }
     }
-
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
-
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        locationRequest = new LocationRequest();
+        LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(1100);
         locationRequest.setFastestInterval(1100);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         if(ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient,locationRequest,this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest,this);
 
         }
 
@@ -249,17 +318,30 @@ public class Tab1Fragment extends Fragment implements
 
     @Override
     public void onLocationChanged(Location location) {
-        lastLocation = location;
+
+
+        Marker currentUserLocationMarker = mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(100, 100)));
+
         if(currentUserLocationMarker != null){
             currentUserLocationMarker.remove();
         }
 
-        LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.title("User Current Location");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
 
-        currentUserLocationMarker = mMap.addMarker(markerOptions);
+        //latlon yeri
+        String lati = String.valueOf(location.getLatitude());
+        String longi = String.valueOf(location.getLongitude());
+        lati = "lat=" + lati;
+        longi = "lon=" + longi;
+        lat = lati;
+        lon = longi;
+
+       //currentUserLocationMarker = mMap.addMarker(markerOptions);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomBy(14));

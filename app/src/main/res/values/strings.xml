@@ -7,5 +7,6 @@
     <string name="buttonName">Add to Favourites</string>
     <string name="rateButtonText">Rate This Place!</string>
     <string name="permission">Permission Denied...</string>
+    <string name="setMarkerButtonString">Search Nearby</string>
 
 </resources>
