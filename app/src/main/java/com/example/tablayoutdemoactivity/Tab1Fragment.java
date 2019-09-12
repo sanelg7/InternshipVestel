@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,9 +51,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,19 +78,26 @@ public class Tab1Fragment extends Fragment implements
     private static final int Request_User_Location_Code = 99;
     private GoogleMap mMap;
 
+    private LocationManager locationManager;
 
 
 
 
     //api
+    String currentLocationLat ;
+    String currentLocationLong;
     private String tag = "MainActivity";
-    private String lat = "lat=38.456";
-    private String lon = "lon=27.654";
+    private String lat = "lat=" + currentLocationLat;
+    private String lon = "lon=" + currentLocationLong;
+
+    public ArrayList<restaurantObject> restaurantObjects = new ArrayList<restaurantObject>();
 
     private void startApiRequest() {
 
-        String url = "https://developers.zomato.com/api/v2.1/search?" + lat + "&" + lon + "&radius=1000&count=2&sort=real_distance";
+        String url = "https://developers.zomato.com/api/v2.1/search?" + lat + "&" + lon + "&radius=20000&count=3&sort=real_distance";
         RequestQueue queue = Volley.newRequestQueue(context);
+
+        Log.d(tag, url);
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,url,
                 null, new Response.Listener<JSONObject>() {
@@ -95,12 +105,80 @@ public class Tab1Fragment extends Fragment implements
             @Override
             public void onResponse(JSONObject response) {
                 Log.d(tag, response.toString());
+                try {
+                    JSONArray jsonArray = response.getJSONArray("restaurants");
+
+                    //making new Json with the attributes we need
+                    //putting restaurant objects into arraylist
+                    for(int i = 0; i < jsonArray.length(); i++){
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        JSONObject restaurant= jsonObject.getJSONObject("restaurant");
+
+                        String name = restaurant.getString("name");
+                        String cuisines = restaurant.getString("cuisines");
+                        int average_cost_for_two = restaurant.getInt("average_cost_for_two");
+                        String thumb = restaurant.getString("thumb");
+                        user_rating userRating = new user_rating
+                                (restaurant.getJSONObject("user_rating").getInt("aggregate_rating"),
+                                        restaurant.getJSONObject("user_rating").getInt("votes")) ;
+
+                        location restLocation = new location
+                                (restaurant.getJSONObject("location").getString("address"),
+                                        restaurant.getJSONObject("location").getString("city"),
+                                        restaurant.getJSONObject("location").getDouble("latitude"),
+                                        restaurant.getJSONObject("location").getDouble("longitude"));
+
+                        restaurantObject rest = new restaurantObject
+                                (name,cuisines,average_cost_for_two,thumb,userRating,restLocation);
+
+
+
+                        //Add new objects to arraylist
+                        restaurantObjects.add(rest);
+
+                        //These lat lon arrays will be used where the markers are put
+                        double [] latArray = new double[restaurantObjects.size()];
+                        double [] lonArray = new double[restaurantObjects.size()];
+                        for( int j = 0; j<restaurantObjects.size();j++){
+                            latArray[j] = restaurantObjects.get(j).restLocation.latitude;
+                            lonArray[j] = restaurantObjects.get(j).restLocation.latitude;
+                        }
+                        //erasing earlier markers
+                            mMap.clear();
+
+                        //setting up the markers
+                        for(int j=0;j<latArray.length;j++){
+
+                            Marker restMarker = mMap.addMarker(new MarkerOptions()
+                                    .title(restaurantObjects.get(j).name)
+                                    .snippet(restaurantObjects.get(i).cuisines)
+                                    .position(new LatLng
+                                            (restaurantObjects.get(j).restLocation.latitude,
+                                                    restaurantObjects.get(j).restLocation.longitude)));
+
+                        }
+                        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+
+                            public void onInfoWindowClick(Marker marker) {
+
+                                Intent intent = new Intent(context, DetailsActivity.class);
+                                startActivityForResult(intent, REQUEST_CODE);
+
+                            }
+                        });
+
+
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(tag, "Error: " + error.getMessage());
-                Log.e(tag, "Site Info Error: " + error.getMessage());
+                Log.e(tag, "Site Info Error: " + error);
 
             }
         }) {
@@ -117,20 +195,7 @@ public class Tab1Fragment extends Fragment implements
             }
         };
 
-        //şu an buradasın
-        try {
-            JSONObject reader = new JSONObject(queue.toString());
-            JSONObject restaurant = reader.getJSONObject("restaurant");
-            String name = restaurant.getString("name");
-            System.out.println(name);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         queue.add(req);
-        System.out.println((queue.toString()));
-        //Marker restMarkers ;
-        //for(int i=0;i<r)
     }
 
     public Tab1Fragment() {
@@ -148,6 +213,22 @@ public class Tab1Fragment extends Fragment implements
          button.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View view) {
+
+               /*String lati = String.valueOf(location.getLatitude());
+                 String longi = String.valueOf(location.getLongitude());
+
+                 String latiStr = lati;
+                 String longiStr = longi;
+
+                 Double latiDouble = Double.valueOf(latiStr);
+                 Double longiDouble = Double.valueOf(longiStr);
+
+                 Double lat =
+*/
+
+
+              //   mMap.moveCamera(CameraUpdateFactory.newLatLng(lat));
+
                  startApiRequest();
              }
          });
@@ -160,9 +241,6 @@ public class Tab1Fragment extends Fragment implements
             public void onMapReady(GoogleMap googleMap) {
 
                 mMap = googleMap;
-
-
-
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 
                     public void onInfoWindowClick(Marker marker) {
@@ -221,6 +299,7 @@ public class Tab1Fragment extends Fragment implements
             }
             });
         startApiRequest();
+
         return view;
 
 
@@ -319,32 +398,43 @@ public class Tab1Fragment extends Fragment implements
     @Override
     public void onLocationChanged(Location location) {
 
-
-        Marker currentUserLocationMarker = mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(100, 100)));
-
-        if(currentUserLocationMarker != null){
-            currentUserLocationMarker.remove();
-        }
-
-
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.title("User Current Location");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-
-        //latlon yeri
         String lati = String.valueOf(location.getLatitude());
         String longi = String.valueOf(location.getLongitude());
+
+        currentLocationLat = String.valueOf(location.getLatitude());
+        currentLocationLong = String.valueOf(location.getLongitude());
+
+        String latiStr = lati;
+        String longiStr = longi;
+
+        Double latiDouble = Double.valueOf(latiStr);
+        Double longiDouble = Double.valueOf(longiStr);
+
         lati = "lat=" + lati;
         longi = "lon=" + longi;
         lat = lati;
         lon = longi;
 
-       //currentUserLocationMarker = mMap.addMarker(markerOptions);
+
+        LatLng initialLoc = new  LatLng(latiDouble,longiDouble);
+        Marker currentUserLocationMarker = mMap.addMarker(new MarkerOptions()
+                .position(initialLoc));
+        if(currentUserLocationMarker != null){
+            currentUserLocationMarker.remove();
+        }
+
+
+
+        LatLng latLng = new LatLng(latiDouble, longiDouble);
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.title("User Current Location");
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+
+
+
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomBy(14));
+        mMap.animateCamera(CameraUpdateFactory.zoomBy(2));
 
         if(googleApiClient != null)
         {
