@@ -94,7 +94,7 @@ public class Tab1Fragment extends Fragment implements
 
     private void startApiRequest() {
 
-        String url = "https://developers.zomato.com/api/v2.1/search?" + lat + "&" + lon + "&radius=20000&count=3&sort=real_distance";
+        String url = "https://developers.zomato.com/api/v2.1/search?" + lat + "&" + lon + "&radius=200&count=3&sort=real_distance";
         RequestQueue queue = Volley.newRequestQueue(context);
 
         Log.d(tag, url);

@@ -43,16 +43,13 @@ public class Tab2Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-      /*  context = getContext();
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-       for(int i=0;i<titleArray.length;i++){
-           String titleName = titleArray[i] ;
-           mCardItems = new ArrayList<>();
-           mCardItems.add(new CardViewItems(titleName));
-       }
 
-       tab2Adapter = new Tab2Adapter(context,titleArray);*/
+        RecyclerView recList ;
+        recList =  getView().findViewById(R.id.cardList);
+        recList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recList.setLayoutManager(llm);
 
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_tab2, container, false);

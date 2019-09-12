@@ -1,60 +1,65 @@
 package com.example.tablayoutdemoactivity;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
+
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.tabs.TabLayout;
+import androidx.annotation.NonNull;
 
-public class Tab2Adapter extends RecyclerView.Adapter<Tab2Adapter.MyViewHolder> {
+import java.util.List;
 
-    private Context mContext;
-    private String[] mTitle;
+public class Tab2Adapter extends RecyclerView.Adapter<Tab2Adapter.FavouritesViewHolder> {
 
+    private List<FavouritesInfo> favouritesInfo;
 
-
-
-
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
-
-        TextView title;
-
-        public MyViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            this.title = (TextView) itemView.findViewById(R.id.title);
-        }
-    }
-    public Tab2Adapter(Context mContext,String[] title) {
-        this.mContext = mContext;
-        this.mTitle = title;
-
-    }
-
-
-    @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                           int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view, parent, false);
-
-        MyViewHolder myViewHolder = new MyViewHolder(view);
-        return myViewHolder;
-    }
-
-    @Override
-    public void onBindViewHolder(final MyViewHolder holder, final int i) {
-
-        holder.title.setText(mTitle[i]);
-
+    public Tab2Adapter(List<FavouritesInfo> favouritesInfo) {
+        this.favouritesInfo = favouritesInfo;
     }
 
     @Override
     public int getItemCount() {
-        return mTitle.length;
+        return favouritesInfo.size();
     }
-}
+
+    @Override
+    public void onBindViewHolder(FavouritesViewHolder FavouritesViewHolder, int i) {
+        FavouritesInfo ci = favouritesInfo.get(i);
+        FavouritesViewHolder.vName.setText(ci.name);
+        FavouritesViewHolder.vCuisine.setText(ci.cuisine);
+       // FavouritesViewHolder.vThumb.setImageResource(ci.thumb);
+    }
+
+    @Override
+    public FavouritesViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View itemView = LayoutInflater.
+                from(viewGroup.getContext()).
+                inflate(R.layout.card_view, viewGroup, false);
+
+        return new FavouritesViewHolder(itemView);
+    }
+
+    public static class FavouritesViewHolder extends RecyclerView.ViewHolder {
+
+            protected TextView vName;
+            protected TextView vCuisine;
+            protected ImageView vThumb;
+
+            public FavouritesViewHolder(View v){
+
+                super(v);
+                vName = (TextView) v.findViewById(R.id.txtName);
+                vCuisine = (TextView) v.findViewById(R.id.txtCuisine);
+                vThumb = (ImageView) v.findViewById(R.id.imgThumb);
+
+            }
+
+        }
+    }
+
+
+
