@@ -40,6 +40,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -55,6 +56,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,7 +71,7 @@ import java.util.Map;
 public class Tab1Fragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener{
 
     private OnFragmentInteractionListener mListener;
     private final int REQUEST_CODE = 2;
@@ -114,6 +116,7 @@ public class Tab1Fragment extends Fragment implements
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         JSONObject restaurant= jsonObject.getJSONObject("restaurant");
 
+                        int id = restaurant.getInt("id");
                         String name = restaurant.getString("name");
                         String cuisines = restaurant.getString("cuisines");
                         int average_cost_for_two = restaurant.getInt("average_cost_for_two");
@@ -129,7 +132,7 @@ public class Tab1Fragment extends Fragment implements
                                         restaurant.getJSONObject("location").getDouble("longitude"));
 
                         restaurantObject rest = new restaurantObject
-                                (name,cuisines,average_cost_for_two,thumb,userRating,restLocation);
+                                (id,name,cuisines,average_cost_for_two,thumb,userRating,restLocation);
 
 
 
@@ -228,10 +231,11 @@ public class Tab1Fragment extends Fragment implements
 
 
               //   mMap.moveCamera(CameraUpdateFactory.newLatLng(lat));
-
+                    mMap.clear();
                  startApiRequest();
              }
          });
+
 
         final SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SuppoprtMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
         assert mapFragment != null;
@@ -398,8 +402,16 @@ public class Tab1Fragment extends Fragment implements
     @Override
     public void onLocationChanged(Location location) {
 
+        String Tag = tag;
+        Log.d( Tag,"onLocationChanged: ");
+        System.out.println(location.getLatitude());
+
         String lati = String.valueOf(location.getLatitude());
         String longi = String.valueOf(location.getLongitude());
+
+
+        Log.d(Tag,"lati longi sonrası");
+        System.out.println(lati);
 
         currentLocationLat = String.valueOf(location.getLatitude());
         currentLocationLong = String.valueOf(location.getLongitude());
@@ -407,8 +419,15 @@ public class Tab1Fragment extends Fragment implements
         String latiStr = lati;
         String longiStr = longi;
 
+
+        Log.d(Tag,"latistr longistr sonrası");
+        System.out.println(latiStr);
+
         Double latiDouble = Double.valueOf(latiStr);
         Double longiDouble = Double.valueOf(longiStr);
+
+        Log.d(Tag,"latiDOUBLELIFTEEEEEE longi sonrası");
+        System.out.println(latiDouble);
 
         lati = "lat=" + lati;
         longi = "lon=" + longi;

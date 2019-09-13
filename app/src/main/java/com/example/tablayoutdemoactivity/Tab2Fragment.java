@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -44,15 +45,22 @@ public class Tab2Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
+
+        final View view = inflater.inflate(R.layout.fragment_tab2, container, false);
+
+
         RecyclerView recList ;
-        recList =  getView().findViewById(R.id.cardList);
+        recList =  view.findViewById(R.id.cardList);
         recList.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
 
+        Tab2Adapter ca = new Tab2Adapter(createList(4));
+        recList.setAdapter(ca);
+
         // Inflate the layout for this fragment
-        final View view = inflater.inflate(R.layout.fragment_tab2, container, false);
 
         return view;
 
@@ -97,5 +105,24 @@ public class Tab2Fragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+
+
+
+    private List<FavouritesInfo> createList(int size) {
+
+        List<FavouritesInfo> result = new ArrayList<FavouritesInfo>();
+        for (int i=1; i <= size; i++) {
+            FavouritesInfo ci = new FavouritesInfo();
+            ci.name = FavouritesInfo.NAME_PREFIX + i;
+            ci.cuisine = FavouritesInfo.CUISINE_PERFIX + i;
+            ci.thumb = FavouritesInfo.THUMB_PREFIX + i + "@test.com";
+
+            result.add(ci);
+
+        }
+
+        return result;
     }
 }

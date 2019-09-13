@@ -47,6 +47,10 @@ public class DetailsActivity extends AppCompatActivity {
         addFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+               // restaurantObject rest = new restaurantObject(restName.toString());
+
+
                 Intent i = new Intent(DetailsActivity.this,Tab2Fragment.class);
                 startActivity(i);
             }

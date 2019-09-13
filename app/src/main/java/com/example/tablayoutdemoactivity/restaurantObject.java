@@ -2,6 +2,7 @@ package com.example.tablayoutdemoactivity;
 
 public class restaurantObject {
 
+    int id;
     String name;
     String cuisines;
     int average_cost_for_two;
@@ -9,8 +10,9 @@ public class restaurantObject {
     user_rating userRating;
     location restLocation;
 
-    public restaurantObject(String name,String cuisines,int average_cost_for_two,String thumb,user_rating userRating,location restLocation){
+    public restaurantObject(int id,String name,String cuisines,int average_cost_for_two,String thumb,user_rating userRating,location restLocation){
 
+        this.id = id;
         this.name =  name;
         this.cuisines = cuisines;
         this.average_cost_for_two = average_cost_for_two;
@@ -19,6 +21,7 @@ public class restaurantObject {
         this.restLocation = restLocation;
 
     }
+    public restaurantObject(String name){this.name = name;}
 
 
 
