@@ -1,5 +1,6 @@
 package com.example.tablayoutdemoactivity;
 
+import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -7,18 +8,19 @@ import androidx.room.Update;
 
 import java.util.List;
 
+@Dao
 public interface restaurantObjectDbDao {
 
-    @Query("SELECT * FROM restaurantObjectDb")
-    List<restaurantObjectDb> getAll();
+    @Query("SELECT * FROM RestaurantObjectDb")
+    List<RestaurantObjectDb> getAll();
 
     @Insert
-    void insert(restaurantObjectDb restaurantObjectDb);
+    void insert(RestaurantObjectDb restaurantObjectDb);
 
     @Delete
-    void delete(restaurantObjectDb restaurantObjectDb);
+    void delete(RestaurantObjectDb restaurantObjectDb);
 
     @Update
-    void update(restaurantObjectDb restaurantObjectDb);
+    void update(RestaurantObjectDb restaurantObjectDb);
 
 }

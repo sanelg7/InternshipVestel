@@ -36,9 +36,12 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
 
+
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
 
         restName = (TextView) findViewById(R.id.rest_name);
+
+
 
         restInfo = (TextView) findViewById(R.id.rest_info);
         restRating = (TextView) findViewById(R.id.rest_rating);

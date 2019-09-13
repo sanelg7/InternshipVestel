@@ -2,6 +2,7 @@ package com.example.tablayoutdemoactivity;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,8 @@ import java.util.List;
 public class Tab2Fragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
+    RecyclerView recList ;
+
 
 /*private RecyclerView recyclerView;
     private ArrayList<CardViewItems> mCardItems;
@@ -50,19 +53,24 @@ public class Tab2Fragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_tab2, container, false);
 
 
-        RecyclerView recList ;
-        recList =  view.findViewById(R.id.cardList);
+        recList=view.findViewById(R.id.cardList);
+        recList.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
+      /*  recList =  view.findViewById(R.id.cardList);
         recList.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
 
         Tab2Adapter ca = new Tab2Adapter(createList(4));
-        recList.setAdapter(ca);
+        recList.setAdapter(ca);*/
 
         // Inflate the layout for this fragment
+        getRestDb();
 
         return view;
+
+
 
 
 
@@ -110,19 +118,42 @@ public class Tab2Fragment extends Fragment {
 
 
 
-    private List<FavouritesInfo> createList(int size) {
+    /*private List<RestaurantObjectDb> createList(int size) {
 
-        List<FavouritesInfo> result = new ArrayList<FavouritesInfo>();
+        List<RestaurantObjectDb> result = new ArrayList<RestaurantObjectDb>();
         for (int i=1; i <= size; i++) {
-            FavouritesInfo ci = new FavouritesInfo();
-            ci.name = FavouritesInfo.NAME_PREFIX + i;
-            ci.cuisine = FavouritesInfo.CUISINE_PERFIX + i;
-            ci.thumb = FavouritesInfo.THUMB_PREFIX + i + "@test.com";
+            RestaurantObjectDb ci = new RestaurantObjectDb();
+            ci.getName() = RestaurantObjectDb.NAME_PREFIX + i;
+            ci.getCuisines() = RestaurantObjectDb.CUISINE_PERFIX + i;
+            ci.getThumb() = RestaurantObjectDb.THUMB_PREFIX + i + "@test.com";
 
             result.add(ci);
 
         }
 
-        return result;
+        return result;*/
+
+
+    private void getRestDb(){
+        class GetRestDb extends AsyncTask<Void,Void,List<RestaurantObjectDb>>{
+            @Override
+            protected List<RestaurantObjectDb> doInBackground(Void... voids){
+                List<RestaurantObjectDb> restaurantObjectDbList = DatabaseClient
+                        .getInstance(getContext().getApplicationContext())
+                        .getAppDatabase()
+                        .restaurantObjectDbDao()
+                        .getAll();
+                return restaurantObjectDbList;
+            }
+            @Override
+            protected void onPostExecute(List<RestaurantObjectDb> restaurantObjectDbList) {
+                super.onPostExecute(restaurantObjectDbList);
+                Tab2Adapter adapter = new Tab2Adapter(getContext(), restaurantObjectDbList);
+                recList.setAdapter(adapter);
+            }
+        }
+
+        GetRestDb gt = new GetRestDb();
+        gt.execute();
+        }
     }
-}
