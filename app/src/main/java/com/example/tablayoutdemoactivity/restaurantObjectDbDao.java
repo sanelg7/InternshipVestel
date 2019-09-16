@@ -1,5 +1,6 @@
 package com.example.tablayoutdemoactivity;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -14,6 +15,17 @@ public interface restaurantObjectDbDao {
     @Query("SELECT * FROM RestaurantObjectDb")
     List<RestaurantObjectDb> getAll();
 
+    @Query("SELECT * FROM RestaurantObjectDb WHERE Favourites =1")
+    LiveData<RestaurantObjectDb> getFavs();
+
+
+  /*  @Query("SELECT `Restaurant Names`,AggregateRating,Cuisines FROM RestaurantObjectDb")
+    List<RestaurantObjectDb> getName();
+*/
+
+    @Query("SELECT COUNT(*) FROM RestaurantObjectDb")
+    int getCount();
+
     @Insert
     void insert(RestaurantObjectDb restaurantObjectDb);
 
@@ -23,4 +35,6 @@ public interface restaurantObjectDbDao {
     @Update
     void update(RestaurantObjectDb restaurantObjectDb);
 
+    @Query("SELECT * FROM RestaurantObjectDb")
+    LiveData<List<RestaurantObjectDb>> getAllRest();
 }

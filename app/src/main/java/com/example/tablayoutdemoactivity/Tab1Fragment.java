@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.room.Query;
+import androidx.room.Room;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,6 +53,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -81,6 +83,8 @@ public class Tab1Fragment extends Fragment implements
     private String lat = "lat=" + currentLocationLat;
     private String lon = "lon=" + currentLocationLong;
 
+    int db_size ;
+
     public ArrayList<restaurantObject> restaurantObjects = new ArrayList<restaurantObject>();
 
     private void startApiRequest() {
@@ -105,24 +109,60 @@ public class Tab1Fragment extends Fragment implements
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         JSONObject restaurant= jsonObject.getJSONObject("restaurant");
 
+
                         int id = restaurant.getInt("id");
                         String name = restaurant.getString("name");
                         String cuisines = restaurant.getString("cuisines");
                         int average_cost_for_two = restaurant.getInt("average_cost_for_two");
                         String thumb = restaurant.getString("thumb");
-                        int aggregate_rating = restaurant.getInt("aggregate_rating");
-                        int votes = restaurant.getInt("votes");
-                        String address = restaurant.getString("address");
-                        String city = restaurant.getString("city");
-                        double latitude = restaurant.getDouble("latitude");
-                        double longitude = restaurant.getDouble("longitude");
 
-                        restaurantObject rest = new restaurantObject
+                        JSONObject user_rating = restaurant.getJSONObject("user_rating");
+
+                        int aggregate_rating = user_rating.getInt("aggregate_rating");
+
+                        int votes = user_rating.getInt("votes");
+
+                        JSONObject location = restaurant.getJSONObject("location");
+
+                        String city = location.getString("city");
+                        String address = location.getString("address");
+                        double latitude = location.getDouble("latitude");
+                        double longitude = location.getDouble("longitude");
+
+                        restaurantObject restaurantObject = new restaurantObject
                                 (id,false,name,cuisines,average_cost_for_two,thumb,aggregate_rating,
                                         votes,address,city,latitude,longitude);
 
+                        AppDatabase appDatabase = Room.databaseBuilder(context,AppDatabase.class,"database")
+                                .allowMainThreadQueries()
+                                .build();
+
+                        restaurantObjectDbDao rest = appDatabase.restaurantObjectDbDao();
+
+
+                        RestaurantObjectDb restaurantObjectDb =
+                                new RestaurantObjectDb
+                                        (id,false,name,cuisines,average_cost_for_two,aggregate_rating
+                                                ,votes,address,city,latitude,longitude,thumb);
+                        db_size = rest.getCount();
+
+                        for(int k = 0;k<db_size;k++){
+                            if(restaurantObjectDb.getId() == rest.getAll().get(i).getId()){
+                                rest.update(restaurantObjectDb);
+                            }else{
+                                rest.insert(restaurantObjectDb);
+
+                            }
+
+                        }
+
+
+
+
+
+
                         //Add new objects to arraylist
-                        restaurantObjects.add(rest);
+                        restaurantObjects.add(restaurantObject);
 
                         //These lat lon arrays will be used where the markers are put
                         double [] latArray = new double[restaurantObjects.size()];
@@ -149,7 +189,11 @@ public class Tab1Fragment extends Fragment implements
 
                             public void onInfoWindowClick(Marker marker) {
 
-                                @Query("SELECT name,aggregate_rating,cuisines FROM restaurantobjects") = marker.getTitle();
+
+
+
+
+
                                 Intent intent = new Intent(context, DetailsActivity.class);
                                 startActivityForResult(intent, REQUEST_CODE);
 
@@ -401,99 +445,6 @@ public class Tab1Fragment extends Fragment implements
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-
-    private void saveRestaurantObjectDb(restaurantObject restaurantObject){
-        final int sId = restaurantObject.id;
-        final boolean sFav = restaurantObject.fav;
-        final String sName = restaurantObject.name;
-        final String sCuisines = restaurantObject.cuisines;
-        final int sCost = restaurantObject.average_cost_for_two;
-        final String sThumb = restaurantObject.thumb;
-        final int s_aggregate_rating = restaurantObject.aggregate_rating;
-        final int sVotes = restaurantObject.votes;
-        final String sAddress = restaurantObject.address;
-        final String sCity = restaurantObject.city;
-        final double sLatitude = restaurantObject.latitude;
-        final double sLongitude = restaurantObject.longitude;
-/*
-        if (sId.isEmpty()) {
-            editTextDesc.setError("Desc required");
-            editTextDesc.requestFocus();
-            return;
-        }
-
-        if (sFav.isEmpty()) {
-            editTextFinishBy.setError("Finish by required");
-            editTextFinishBy.requestFocus();
-            return;
-        }
-        if (sName.isEmpty()) {
-            editTextFinishBy.setError("Finish by required");
-            editTextFinishBy.requestFocus();
-            return;
-        }
-        if (sCuisines.isEmpty()) {
-            editTextFinishBy.setError("Finish by required");
-            editTextFinishBy.requestFocus();
-            return;
-        }
-        if (sCost.isEmpty()) {
-            editTextFinishBy.setError("Finish by required");
-            editTextFinishBy.requestFocus();
-            return;
-        }
-        if (sThumb.isEmpty()) {
-            editTextFinishBy.setError("Finish by required");
-            editTextFinishBy.requestFocus();
-            return;
-        }
-        if (s_user_rating.isEmpty()) {
-            editTextFinishBy.setError("Finish by required");
-            editTextFinishBy.requestFocus();
-            return;
-        }
-        if (sRestLocation.isEmpty()) {
-            editTextFinishBy.setError("Finish by required");
-            editTextFinishBy.requestFocus();
-            return;
-        }
-
-*/
-    class SaveRestaurantObjectDb extends AsyncTask<Void,Void,Void>{
-
-        @Override
-        protected Void doInBackground(Void... voids){
-
-            //creating RestaurantObjectDb
-            RestaurantObjectDb restaurantObjectDb = new RestaurantObjectDb();
-            restaurantObjectDb.setId(sId);
-            restaurantObjectDb.setFav(sFav);
-            restaurantObjectDb.setName(sName);
-            restaurantObjectDb.setCuisines(sCuisines);
-            restaurantObjectDb.setAverage_cost_for_two(sCost);
-            restaurantObjectDb.setThumb(sThumb);
-            restaurantObjectDb.setAggregate_rating(s_aggregate_rating);
-            restaurantObjectDb.setVotes(sVotes);
-            restaurantObjectDb.setAddress(sAddress);
-            restaurantObjectDb.setCity(sCity);
-            restaurantObjectDb.setLatitude(sLatitude);
-            restaurantObjectDb.setLongitude(sLongitude);
-
-            //add the db
-            DatabaseClient.getInstance(context.getApplicationContext()).getAppDatabase()
-                    .restaurantObjectDbDao()
-                    .insert(restaurantObjectDb);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            //finish();
-            startActivity(new Intent(context.getApplicationContext(), MainActivity.class));
-            Toast.makeText(context.getApplicationContext(), "Saved", Toast.LENGTH_LONG).show();
-        }
-    }
 }
 
-}
+

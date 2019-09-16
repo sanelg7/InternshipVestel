@@ -16,7 +16,28 @@ public class RestaurantObjectDb implements Serializable {
     public int defaultInt = 0;
     public boolean defaultBool = false;
 
+    //public RestaurantObjectDb(String name){this.name = name;}
+
+public  RestaurantObjectDb(){}
+    public RestaurantObjectDb(int id, boolean fav, String name, String cuisines, int average_cost_for_two, int aggregate_rating, int votes, String address, String city, double latitude, double longitude, String thumb) {
+
+
+        this.id = id;
+        this.fav = fav;
+        this.name = name;
+        this.cuisines = cuisines;
+        this.average_cost_for_two = average_cost_for_two;
+        this.aggregate_rating = aggregate_rating;
+        this.votes = votes;
+        this.address = address;
+        this.city = city;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.thumb = thumb;
+    }
+
     @PrimaryKey(autoGenerate = false)
+
     private int id;
 
     @ColumnInfo(name = "Favourites")
@@ -52,6 +73,8 @@ public class RestaurantObjectDb implements Serializable {
 
     @ColumnInfo(name = "Thumb URL")
     private String thumb;
+
+
 
     public boolean isFav() {
         return fav;
@@ -149,6 +172,5 @@ public class RestaurantObjectDb implements Serializable {
     public void setThumb(String thumb) {
         this.thumb = thumb;
     }
-
 
 }

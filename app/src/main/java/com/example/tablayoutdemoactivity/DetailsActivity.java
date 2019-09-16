@@ -1,15 +1,24 @@
 package com.example.tablayoutdemoactivity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.DatabaseConfiguration;
+import androidx.room.InvalidationTracker;
+import androidx.room.Room;
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class DetailsActivity extends AppCompatActivity {
     private  final int REQUEST_CODE = 2;
@@ -27,6 +36,14 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details);
 
+
+
+
+
+        // rest.delete(restaurantObjectDb);
+
+
+
         rateButton = (Button) findViewById(R.id.rateButton);
         rateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,19 +57,18 @@ public class DetailsActivity extends AppCompatActivity {
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
 
         restName = (TextView) findViewById(R.id.rest_name);
+      //  restName.setText(restaurantObjectDb.getName());
 
 
 
         restInfo = (TextView) findViewById(R.id.rest_info);
+
         restRating = (TextView) findViewById(R.id.rest_rating);
 
         addFav = (Button) findViewById(R.id.addFav);
         addFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-               // restaurantObject rest = new restaurantObject(restName.toString());
-
 
                 Intent i = new Intent(DetailsActivity.this,Tab2Fragment.class);
                 startActivity(i);
@@ -82,6 +98,9 @@ public class DetailsActivity extends AppCompatActivity {
                 finish();
             }
 
+
         });
     }
+
+
 }

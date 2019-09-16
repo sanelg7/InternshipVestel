@@ -19,14 +19,15 @@ public class Tab2Adapter extends RecyclerView.Adapter<Tab2Adapter.FavouritesView
 
     private Context context;
 
-    //private List<FavouritesInfo> favouritesInfo;
+    private final LayoutInflater layoutInflater;
 
     private List<RestaurantObjectDb> restaurantObjectDbList;
 
 //context cıkar geri alırken
-    public Tab2Adapter(Context context,List<RestaurantObjectDb> restaurantObjectDbList) {
+    public Tab2Adapter(Context context/*,List<RestaurantObjectDb> restaurantObjectDbList*/) {
         this.context = context;
-        this.restaurantObjectDbList = restaurantObjectDbList;
+        layoutInflater = LayoutInflater.from(context);
+     //   this.restaurantObjectDbList = restaurantObjectDbList;
     }
 
     @Override
@@ -36,23 +37,34 @@ public class Tab2Adapter extends RecyclerView.Adapter<Tab2Adapter.FavouritesView
 
     @Override
     public void onBindViewHolder(FavouritesViewHolder FavouritesViewHolder, int i) {
-        RestaurantObjectDb favInfo = restaurantObjectDbList.get(i);
+       /* RestaurantObjectDb favInfo = restaurantObjectDbList.get(i);
         FavouritesViewHolder.vName.setText(favInfo.getName());
-        FavouritesViewHolder.vCuisine.setText(favInfo.getAggregate_rating());
+        FavouritesViewHolder.vCuisine.setText(favInfo.getCuisines());
+       FavouritesViewHolder.vThumb.setImageURI(favInfo.getThumb());*/
+
+       if(restaurantObjectDbList != null){
+           RestaurantObjectDb restaurantObjectDb =restaurantObjectDbList.get(i);
+           FavouritesViewHolder.setData(restaurantObjectDb.getName(),i);
+       }else{
+           FavouritesViewHolder.vName.setText("AAAAA");
+       }
 
 
 
 
        // FavouritesViewHolder.vThumb.setImageResource(favInfo.thumb);
+    }public void setRest (List<RestaurantObjectDb> restaurantObjectDbs){
+        restaurantObjectDbList = restaurantObjectDbs;
+        notifyDataSetChanged();
     }
 
     @Override
     public FavouritesViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View itemView = LayoutInflater.
-                from(viewGroup.getContext()).
-                inflate(R.layout.card_view, viewGroup, false);
+        View itemView = layoutInflater
+                .inflate(R.layout.card_view, viewGroup, false);
+        FavouritesViewHolder viewHolder = new FavouritesViewHolder(itemView);
 
-        return new FavouritesViewHolder(itemView);
+        return viewHolder;
     }
 
     public class FavouritesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -60,6 +72,7 @@ public class Tab2Adapter extends RecyclerView.Adapter<Tab2Adapter.FavouritesView
             protected TextView vName;
             protected TextView vCuisine;
             protected ImageView vThumb;
+            private int position;
 
             public FavouritesViewHolder(View v){
 
@@ -70,7 +83,11 @@ public class Tab2Adapter extends RecyclerView.Adapter<Tab2Adapter.FavouritesView
 
                 v.setOnClickListener(this);
 
-            }
+            }public void setData(String fav,int i){
+                vName.setText(fav);
+                position = i;
+        }
+
 
         @Override
         public void onClick(View view) {

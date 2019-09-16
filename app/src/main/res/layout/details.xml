@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:text="@string/buttonName" />
 
-
+    /data/data/com.example.tablayoutdemoactivity/databases/mydb
 
     <TextView
         android:id="@+id/rest_name"

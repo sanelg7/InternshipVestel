@@ -26,22 +26,9 @@ public class Tab2Fragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     RecyclerView recList ;
+    private Context context = getContext();
 
-
-/*private RecyclerView recyclerView;
-    private ArrayList<CardViewItems> mCardItems;
-    private Context context;
-    private Tab2Adapter tab2Adapter;
-
-    String[] titleArray = {"Title1","Title2","Title3","Title4","Title5","Title6","Title7","Title8","Title9","Title10"};
-
-    Tab2Adapter adapter;
-
-    public static final String EXTRA_CREATOR="creatorName";*/
-
-    public Tab2Fragment() {
-        // Required empty public constructor
-    }
+    public Tab2Fragment() {}
 
 
     @Override
@@ -54,10 +41,16 @@ public class Tab2Fragment extends Fragment {
 
 
         recList=view.findViewById(R.id.cardList);
+        recList.setHasFixedSize(true);
+
         recList.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
+        Tab2Adapter tab2Adapter = new Tab2Adapter(context);
+        recList.setAdapter(tab2Adapter);
+        recList.setLayoutManager(new LinearLayoutManager(context));
+
+
       /*  recList =  view.findViewById(R.id.cardList);
-        recList.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
@@ -148,7 +141,7 @@ public class Tab2Fragment extends Fragment {
             @Override
             protected void onPostExecute(List<RestaurantObjectDb> restaurantObjectDbList) {
                 super.onPostExecute(restaurantObjectDbList);
-                Tab2Adapter adapter = new Tab2Adapter(getContext(), restaurantObjectDbList);
+                Tab2Adapter adapter = new Tab2Adapter(getContext());
                 recList.setAdapter(adapter);
             }
         }
