@@ -51,10 +51,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+
+import static com.android.volley.VolleyLog.TAG;
 
 
 /**
@@ -67,6 +73,7 @@ public class Tab1Fragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener{
+
 
     private OnFragmentInteractionListener mListener;
     private final int REQUEST_CODE = 2;
@@ -83,7 +90,13 @@ public class Tab1Fragment extends Fragment implements
     private String lat = "lat=" + currentLocationLat;
     private String lon = "lon=" + currentLocationLong;
 
+    public String markerName;
+
+
     int db_size ;
+
+    List<RestaurantObjectDb>  restaurantObjectDbList =new ArrayList<RestaurantObjectDb>();
+
 
     public ArrayList<restaurantObject> restaurantObjects = new ArrayList<restaurantObject>();
 
@@ -93,6 +106,10 @@ public class Tab1Fragment extends Fragment implements
         RequestQueue queue = Volley.newRequestQueue(context);
 
         Log.d(tag, url);
+
+        final AppDatabase appDatabase = Room.databaseBuilder(context,AppDatabase.class,"database")
+                .allowMainThreadQueries()
+                .build();
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,url,
                 null, new Response.Listener<JSONObject>() {
@@ -105,9 +122,10 @@ public class Tab1Fragment extends Fragment implements
 
                     //making new Json with the attributes we need
                     //putting restaurant objects into arraylist
-                    for(int i = 0; i < jsonArray.length(); i++){
+
+                    for(int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        JSONObject restaurant= jsonObject.getJSONObject("restaurant");
+                        JSONObject restaurant = jsonObject.getJSONObject("restaurant");
 
 
                         int id = restaurant.getInt("id");
@@ -130,52 +148,50 @@ public class Tab1Fragment extends Fragment implements
                         double longitude = location.getDouble("longitude");
 
                         restaurantObject restaurantObject = new restaurantObject
-                                (id,false,name,cuisines,average_cost_for_two,thumb,aggregate_rating,
-                                        votes,address,city,latitude,longitude);
+                                (id, false, name, cuisines, average_cost_for_two, thumb, aggregate_rating,
+                                        votes, address, city, latitude, longitude);
 
-                        AppDatabase appDatabase = Room.databaseBuilder(context,AppDatabase.class,"database")
-                                .allowMainThreadQueries()
-                                .build();
 
                         restaurantObjectDbDao rest = appDatabase.restaurantObjectDbDao();
 
 
                         RestaurantObjectDb restaurantObjectDb =
                                 new RestaurantObjectDb
-                                        (id,false,name,cuisines,average_cost_for_two,aggregate_rating
-                                                ,votes,address,city,latitude,longitude,thumb);
-                        db_size = rest.getCount();
+                                        (id, true, name, cuisines, average_cost_for_two, aggregate_rating
+                                                , votes, address, city, latitude, longitude, thumb);
 
-                        for(int k = 0;k<db_size;k++){
-                            if(restaurantObjectDb.getId() == rest.getAll().get(i).getId()){
+                        restaurantObjectDbList.add(restaurantObjectDb);
+                        System.out.println(restaurantObjectDbList.size());
+
+
+                        db_size = rest.getCount();
+                        for (int k = 0; k < db_size; k++) {
+                            if (restaurantObjectDb.getId() == rest.getAll().get(i).getId()) {
                                 rest.update(restaurantObjectDb);
-                            }else{
+                            } else {
                                 rest.insert(restaurantObjectDb);
 
                             }
 
+
                         }
-
-
-
-
 
 
                         //Add new objects to arraylist
                         restaurantObjects.add(restaurantObject);
 
-                        //These lat lon arrays will be used where the markers are put
-                        double [] latArray = new double[restaurantObjects.size()];
-                        double [] lonArray = new double[restaurantObjects.size()];
-                        for( int j = 0; j<restaurantObjects.size();j++){
-                            latArray[j] = restaurantObjects.get(j).latitude;
-                            lonArray[j] = restaurantObjects.get(j).longitude;
+
+                        ArrayList<Double> latList = new ArrayList<Double>();
+                        ArrayList<Double> lonList = new ArrayList<Double>();
+                        for (int j = 0; j < restaurantObjects.size(); j++) {
+                            latList.add(restaurantObjects.get(j).latitude);
+                            lonList.add(restaurantObjects.get(j).longitude);
                         }
                         //erasing earlier markers
-                            mMap.clear();
+                        mMap.clear();
 
                         //setting up the markers
-                        for(int j=0;j<latArray.length;j++){
+                        for (int j = 0; j < latList.size(); j++) {
 
                             Marker restMarker = mMap.addMarker(new MarkerOptions()
                                     .title(restaurantObjects.get(j).name)
@@ -185,22 +201,58 @@ public class Tab1Fragment extends Fragment implements
                                                     restaurantObjects.get(j).longitude)));
 
                         }
+
+                        for (int a = 0; a < latList.size(); a++) {
+
+                            latList.remove(a);
+                            lonList.remove(a);
+                        }
+                    }
+
                         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 
                             public void onInfoWindowClick(Marker marker) {
 
 
+                                Intent intentDetails = new Intent(context, DetailsActivity.class);
+
+                                String detailsName;
+                                String detailsCuisine;
+                                int detailsVotes;
+                                String detailsThumb;
+                                String detailsCity;
+                                int detailsCost;
+                                System.out.println(restaurantObjectDbList.size());
+                                for(int b=0;b<restaurantObjectDbList.size();b++){
+
+                                    Log.d(TAG,"marker.fj()");
+                                    System.out.println(marker.getPosition());
+                                    if(restaurantObjectDbList.get(b).getLatitude() == marker.getPosition().latitude && restaurantObjectDbList.get(b).getLongitude() == marker.getPosition().longitude){
+                                        Log.d(TAG,"marker.getPosition()");
+                                        detailsName = restaurantObjectDbList.get(b).getName();
+                                        detailsCuisine = restaurantObjectDbList.get(b).getCuisines();
+                                        detailsVotes = restaurantObjectDbList.get(b).getVotes();
+                                        detailsThumb = restaurantObjectDbList.get(b).getThumb();
+                                        detailsCity = restaurantObjectDbList.get(b).getCity();
+                                        detailsCost = restaurantObjectDbList.get(b).getAverage_cost_for_two();
+
+                                        intentDetails.putExtra("Title",detailsName);
+                                        intentDetails.putExtra("Cuisine",detailsCuisine);
+                                        intentDetails.putExtra("Votes",detailsVotes);
+                                        intentDetails.putExtra("Thumb",detailsThumb);
+                                        intentDetails.putExtra("City",detailsCity);
+                                        intentDetails.putExtra("Cost",detailsCost);
+
+                                    }
+
+                                }startActivity(intentDetails);
 
 
-
-
-                                Intent intent = new Intent(context, DetailsActivity.class);
-                                startActivityForResult(intent, REQUEST_CODE);
 
                             }
                         });
 
-                    }
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -240,6 +292,7 @@ public class Tab1Fragment extends Fragment implements
         final View view = inflater.inflate(R.layout.fragment_tab1, container, false);
          context = getContext();
          Button button = view.findViewById(R.id.setMarkersButton);
+
          button.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View view) {
@@ -421,8 +474,7 @@ public class Tab1Fragment extends Fragment implements
         markerOptions.title("User Current Location");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomBy(2));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,2));
 
         if(googleApiClient != null)
         {

@@ -12,8 +12,8 @@ import com.google.android.material.tabs.TabLayout;
 
 
 public class MainActivity extends AppCompatActivity
-        implements Tab1Fragment.OnFragmentInteractionListener,
-                    Tab2Fragment.OnFragmentInteractionListener{
+        implements Tab1Fragment.OnFragmentInteractionListener/*,
+                    Tab2Fragment.OnFragmentInteractionListener*/{
 
     @Override
     public void onFragmentInteraction(Uri uri){

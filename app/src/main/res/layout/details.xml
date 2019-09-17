@@ -29,6 +29,17 @@
         android:layout_height="wrap_content"
         android:text="Restaurant Rating: " />
 
+    <TextView
+        android:id="@+id/cost_for_two"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cost for two: " />
+   <TextView
+        android:id="@+id/city_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="City: " />
+
     <Button
         android:id="@+id/rateButton"
         android:layout_width="match_parent"
