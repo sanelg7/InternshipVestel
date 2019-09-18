@@ -28,5 +28,11 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    
+    <style name="textSize" parent="TextAppearance.AppCompat">
+
+        <item name="android:textSize">30sp</item>
+
+    </style>
 
 </resources>

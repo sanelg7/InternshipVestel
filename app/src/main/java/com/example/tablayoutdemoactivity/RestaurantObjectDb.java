@@ -19,7 +19,10 @@ public class RestaurantObjectDb implements Serializable {
     //public RestaurantObjectDb(String name){this.name = name;}
 
 public  RestaurantObjectDb(){}
-    public RestaurantObjectDb(int id, boolean fav, String name, String cuisines, int average_cost_for_two, int aggregate_rating, int votes, String address, String city, double latitude, double longitude, String thumb) {
+    public RestaurantObjectDb(int id, boolean fav, String name, String cuisines,
+                              int average_cost_for_two, int aggregate_rating, int votes,
+                              String address, String city, double latitude, double longitude,
+                              String thumb) {
 
 
         this.id = id;

@@ -87,22 +87,33 @@ public class Tab1Fragment extends Fragment implements
     String currentLocationLat ;
     String currentLocationLong;
     private String tag = "MainActivity";
-    private String lat = "lat=" + currentLocationLat;
-    private String lon = "lon=" + currentLocationLong;
-
-    public String markerName;
+    private String lat ;
+    private String lon ;
 
 
     int db_size ;
 
-    List<RestaurantObjectDb>  restaurantObjectDbList =new ArrayList<RestaurantObjectDb>();
 
 
     public ArrayList<restaurantObject> restaurantObjects = new ArrayList<restaurantObject>();
 
+
     private void startApiRequest() {
 
-        String url = "https://developers.zomato.com/api/v2.1/search?" + lat + "&" + lon + "&radius=200&count=3&sort=real_distance";
+       final ArrayList<RestaurantObjectDb>  restaurantObjectDbList =new ArrayList<RestaurantObjectDb>();
+
+
+        lat = "lat=" + currentLocationLat;
+        lon = "lon=" + currentLocationLong;
+
+        System.out.println(lat);
+
+        String url = "https://developers.zomato.com/api/v2.1/search?" + lat + "&" + lon + "&radius=1&count=3&sort=real_distance";
+
+
+        System.out.println(lat + "AAA" + lon);
+
+
         RequestQueue queue = Volley.newRequestQueue(context);
 
         Log.d(tag, url);
@@ -148,8 +159,8 @@ public class Tab1Fragment extends Fragment implements
                         double longitude = location.getDouble("longitude");
 
                         restaurantObject restaurantObject = new restaurantObject
-                                (id, false, name, cuisines, average_cost_for_two, thumb, aggregate_rating,
-                                        votes, address, city, latitude, longitude);
+                                (id,false,name,cuisines,average_cost_for_two,thumb,aggregate_rating,votes
+                                        ,address,city,latitude,longitude);
 
 
                         restaurantObjectDbDao rest = appDatabase.restaurantObjectDbDao();
@@ -157,10 +168,11 @@ public class Tab1Fragment extends Fragment implements
 
                         RestaurantObjectDb restaurantObjectDb =
                                 new RestaurantObjectDb
-                                        (id, true, name, cuisines, average_cost_for_two, aggregate_rating
-                                                , votes, address, city, latitude, longitude, thumb);
+                                        (id,false,name,cuisines,average_cost_for_two,aggregate_rating,votes,
+                                        address,city,latitude,longitude,thumb);
 
                         restaurantObjectDbList.add(restaurantObjectDb);
+                        System.out.println("SADSADSA" + restaurantObjectDb.getName());
                         System.out.println(restaurantObjectDbList.size());
 
 
@@ -180,12 +192,19 @@ public class Tab1Fragment extends Fragment implements
                         //Add new objects to arraylist
                         restaurantObjects.add(restaurantObject);
 
-
+                        System.out.println("TTTTTTTTTTTT" + (restaurantObjects.size()));
                         ArrayList<Double> latList = new ArrayList<Double>();
                         ArrayList<Double> lonList = new ArrayList<Double>();
-                        for (int j = 0; j < restaurantObjects.size(); j++) {
-                            latList.add(restaurantObjects.get(j).latitude);
-                            lonList.add(restaurantObjects.get(j).longitude);
+                        ArrayList<String> nameList = new ArrayList<String>();
+                        ArrayList<String> cuisineList = new ArrayList<String>();
+                        for (int w = 0; w < restaurantObjects.size(); w++) {
+                            System.out.println(restaurantObjects.get(w).getName());
+
+                            latList.add(restaurantObjects.get(w).latitude);
+                            lonList.add(restaurantObjects.get(w).longitude);
+                            nameList.add(restaurantObjects.get(w).name);
+                            cuisineList.add(restaurantObjects.get(w).cuisines);
+
                         }
                         //erasing earlier markers
                         mMap.clear();
@@ -194,11 +213,11 @@ public class Tab1Fragment extends Fragment implements
                         for (int j = 0; j < latList.size(); j++) {
 
                             Marker restMarker = mMap.addMarker(new MarkerOptions()
-                                    .title(restaurantObjects.get(j).name)
-                                    .snippet(restaurantObjects.get(i).cuisines)
+                                    .title(nameList.get(j))
+                                    .snippet(cuisineList.get(j))
                                     .position(new LatLng
-                                            (restaurantObjects.get(j).latitude,
-                                                    restaurantObjects.get(j).longitude)));
+                                            (latList.get(j),
+                                                    lonList.get(j))));
 
                         }
 
@@ -207,9 +226,12 @@ public class Tab1Fragment extends Fragment implements
                             latList.remove(a);
                             lonList.remove(a);
                         }
-                    }
+                    }restaurantObjects.clear();
 
-                        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    System.out.println(restaurantObjectDbList.size() + "2.deneme yeri");
+
+
+                    mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 
                             public void onInfoWindowClick(Marker marker) {
 
@@ -222,14 +244,24 @@ public class Tab1Fragment extends Fragment implements
                                 String detailsThumb;
                                 String detailsCity;
                                 int detailsCost;
-                                System.out.println(restaurantObjectDbList.size());
-                                for(int b=0;b<restaurantObjectDbList.size();b++){
+
+                                System.out.println(restaurantObjectDbList.size() + "for dışı yeri");
+
+
+                                for(int b=0;b <restaurantObjectDbList.size();b++){
+
+                                    Log.d(TAG, "FOR İÇ: " + restaurantObjectDbList.size());
+
 
                                     Log.d(TAG,"marker.fj()");
                                     System.out.println(marker.getPosition());
+                                    System.out.println(restaurantObjectDbList.get(0).getLatitude());
+                                    System.out.println(marker.getPosition().latitude);
                                     if(restaurantObjectDbList.get(b).getLatitude() == marker.getPosition().latitude && restaurantObjectDbList.get(b).getLongitude() == marker.getPosition().longitude){
                                         Log.d(TAG,"marker.getPosition()");
+
                                         detailsName = restaurantObjectDbList.get(b).getName();
+                                        System.out.println(detailsName);
                                         detailsCuisine = restaurantObjectDbList.get(b).getCuisines();
                                         detailsVotes = restaurantObjectDbList.get(b).getVotes();
                                         detailsThumb = restaurantObjectDbList.get(b).getThumb();
@@ -243,9 +275,11 @@ public class Tab1Fragment extends Fragment implements
                                         intentDetails.putExtra("City",detailsCity);
                                         intentDetails.putExtra("Cost",detailsCost);
 
+                                        Log.d(TAG, "onInfoWindowClick: " + detailsCity + detailsName);
                                     }
 
-                                }startActivity(intentDetails);
+                                }
+                                startActivity(intentDetails);
 
 
 
@@ -257,6 +291,8 @@ public class Tab1Fragment extends Fragment implements
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                restaurantObjectDbList.clear();
+                Log.d(TAG, "Marker list count should be 0 now... ");
             }
         }, new Response.ErrorListener() {
             @Override
@@ -430,36 +466,21 @@ public class Tab1Fragment extends Fragment implements
     public void onLocationChanged(Location location) {
 
         String Tag = tag;
-        Log.d( Tag,"onLocationChanged: ");
-        System.out.println(location.getLatitude());
-
         String lati = String.valueOf(location.getLatitude());
         String longi = String.valueOf(location.getLongitude());
 
-
-        Log.d(Tag,"lati longi sonrası");
-        System.out.println(lati);
-
         currentLocationLat = String.valueOf(location.getLatitude());
         currentLocationLong = String.valueOf(location.getLongitude());
-
+        System.out.println(currentLocationLat);
         String latiStr = lati;
         String longiStr = longi;
 
-
-        Log.d(Tag,"latistr longistr sonrası");
         System.out.println(latiStr);
 
         Double latiDouble = Double.valueOf(latiStr);
         Double longiDouble = Double.valueOf(longiStr);
 
-        Log.d(Tag,"latiDOUBLELIFTEEEEEE longi sonrası");
-        System.out.println(latiDouble);
 
-        lati = "lat=" + lati;
-        longi = "lon=" + longi;
-        lat = lati;
-        lon = longi;
 
 
         LatLng initialLoc = new  LatLng(latiDouble,longiDouble);
@@ -474,7 +495,7 @@ public class Tab1Fragment extends Fragment implements
         markerOptions.title("User Current Location");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,2));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
 
         if(googleApiClient != null)
         {

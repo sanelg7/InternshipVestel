@@ -2,6 +2,7 @@ package com.example.tablayoutdemoactivity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -26,23 +28,61 @@ public class DetailsActivity extends AppCompatActivity {
     private TextView cityName;
     private Button addFav;
 
+    List<RestaurantObjectDb> restaurantObjectDbList = new ArrayList<RestaurantObjectDb>();
+
+    private void setFavs(String title,String cuisine,String city){
+
+
+        for(int j=0;j<restaurantObjectDbList.size();j++){
+            RestaurantObjectDb rest ;
+
+            if(restaurantObjectDbList.get(j).getName() == title &&
+                    restaurantObjectDbList.get(j).getCuisines() == cuisine &&
+                    restaurantObjectDbList.get(j).getCity() == city){
+                restaurantObjectDbList.get(j).setFav(true);
+            }rest = restaurantObjectDbList.get(j);
+            rest.setFav(true);
+        }
+    }
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details);
+
         Intent intent = getIntent();
 
-        String title = intent.getStringExtra("Title");
-        String cuisine = intent.getStringExtra("Cuisine");
+
+        myDatabase= Room.databaseBuilder(this,AppDatabase.class,"database").allowMainThreadQueries().build();
+
+        restaurantObjectDbList = myDatabase.restaurantObjectDbDao().getAll();
+
+
+        final String title = intent.getStringExtra("Title");
+        final String cuisine = intent.getStringExtra("Cuisine");
         int vote = intent.getIntExtra("Votes", 0);
         int cost = intent.getIntExtra("Cost", 0);
         String thumb = intent.getStringExtra("Thumb");
-        String city = intent.getStringExtra("City");
+        final String city = intent.getStringExtra("City");
 
 
-        // rest.delete(restaurantObjectDb);
 
 
+
+
+        addFav = (Button) findViewById(R.id.addFav);
+        addFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                setFavs(title,cuisine,city);
+
+                Intent i = new Intent(DetailsActivity.this, Tab2Fragment.class);
+                startActivityForResult(i,REQUEST_CODE);
+            }
+        });
         rateButton = (Button) findViewById(R.id.rateButton);
         rateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,30 +130,6 @@ public class DetailsActivity extends AppCompatActivity {
         } else {
             cityName.setText("No information available...");
         }
-
-
-        addFav = (Button) findViewById(R.id.addFav);
-        addFav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent i = new Intent(DetailsActivity.this, Tab2Fragment.class);
-                startActivity(i);
-            }
-        });
-        addFav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent returnIntent = getIntent();
-                returnIntent.putExtra("returnData", "From SecondAct");
-
-                setResult(RESULT_OK, returnIntent);
-                finish();
-            }
-
-
-        });
     }
 
 

@@ -17,14 +17,8 @@ public interface restaurantObjectDbDao {
     List<RestaurantObjectDb> getAll();
 
     @Query("SELECT * FROM RestaurantObjectDb WHERE Favourites =1")
-    LiveData<RestaurantObjectDb> getFavs();
+    List<RestaurantObjectDb> getFavs();
 
-
-  /*  @Query("SELECT `Restaurant Names`,AggregateRating,Cuisines FROM RestaurantObjectDb")
-    List<RestaurantObjectDb> getName();
-*/
-    /*@Query("DELETE FROM RestaurantObjectDb")
-    void deleteAll(RestaurantObjectDb restaurantObjectDb);*/
 
     @Query("SELECT COUNT(*) FROM RestaurantObjectDb")
     int getCount();
