@@ -15,6 +15,7 @@
             android:layout_alignParentTop="true"
             android:text="Latitude:"
             android:textSize="18sp" />
+
         <TextView
             android:id="@+id/latitude_textview"
             android:layout_width="wrap_content"
@@ -23,6 +24,7 @@
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/latitude"
             android:textSize="16sp" />
+
         <TextView
             android:id="@+id/longitude"
             android:layout_width="wrap_content"
@@ -32,6 +34,7 @@
             android:text="Longitude:"
             android:layout_marginTop="24dp"
             android:textSize="18sp" />
+
         <TextView
             android:id="@+id/longitude_textview"
             android:layout_width="wrap_content"
@@ -39,8 +42,7 @@
             android:layout_alignBaseline="@+id/longitude"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/longitude"
-            android:textSize="16sp"/>
-
+            android:textSize="16sp" />
 
 
     </RelativeLayout>
@@ -49,7 +51,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:id="@+id/frg"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <Button
         android:id="@+id/setMarkersButton"

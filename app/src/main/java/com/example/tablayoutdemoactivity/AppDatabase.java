@@ -1,4 +1,5 @@
 package com.example.tablayoutdemoactivity;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Database(entities =
-        {RestaurantObjectDb.class,},version = 1)
+        {RestaurantObjectDb.class,}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract restaurantObjectDbDao restaurantObjectDbDao();

@@ -25,14 +25,14 @@ public class DatabaseClient {
 
     }
 
-        public static synchronized DatabaseClient getInstance (Context context){
-            if (instance == null) {
-                instance = new DatabaseClient(context);
-            }
-            return instance;
+    public static synchronized DatabaseClient getInstance(Context context) {
+        if (instance == null) {
+            instance = new DatabaseClient(context);
         }
-
-        public AppDatabase getAppDatabase(){
-            return appDatabase;
-        }
+        return instance;
     }
+
+    public AppDatabase getAppDatabase() {
+        return appDatabase;
+    }
+}

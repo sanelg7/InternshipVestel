@@ -72,7 +72,7 @@ import static com.android.volley.VolleyLog.TAG;
 public class Tab1Fragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener{
+        LocationListener {
 
 
     private OnFragmentInteractionListener mListener;
@@ -84,15 +84,14 @@ public class Tab1Fragment extends Fragment implements
     private LocationManager locationManager;
 
     //api
-    String currentLocationLat ;
+    String currentLocationLat;
     String currentLocationLong;
     private String tag = "MainActivity";
-    private String lat ;
-    private String lon ;
+    private String lat;
+    private String lon;
 
 
-    int db_size ;
-
+    int db_size;
 
 
     public ArrayList<restaurantObject> restaurantObjects = new ArrayList<restaurantObject>();
@@ -100,7 +99,7 @@ public class Tab1Fragment extends Fragment implements
 
     private void startApiRequest() {
 
-        final ArrayList<RestaurantObjectDb>  restaurantObjectDbList =new ArrayList<RestaurantObjectDb>();
+        final ArrayList<RestaurantObjectDb> restaurantObjectDbList = new ArrayList<RestaurantObjectDb>();
 
 
         lat = "lat=" + currentLocationLat;
@@ -119,13 +118,13 @@ public class Tab1Fragment extends Fragment implements
         Log.d(tag, url);
 
 
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,url,
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url,
                 null, new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject response) {
 
-                final AppDatabase appDatabase = Room.databaseBuilder(context,AppDatabase.class,"database")
+                final AppDatabase appDatabase = Room.databaseBuilder(context, AppDatabase.class, "database")
                         .allowMainThreadQueries()
                         .enableMultiInstanceInvalidation()
                         .build();
@@ -134,12 +133,11 @@ public class Tab1Fragment extends Fragment implements
                     JSONArray jsonArray = response.getJSONArray("restaurants");
 
 
-
                     //making new Json with the attributes we need
                     //putting restaurant objects into arraylist
                     restaurantObjectDbList.clear();
 
-                    for(int i = 0; i < jsonArray.length(); i++) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         JSONObject restaurant = jsonObject.getJSONObject("restaurant");
 
@@ -164,8 +162,8 @@ public class Tab1Fragment extends Fragment implements
                         double longitude = location.getDouble("longitude");
 
                         restaurantObject restaurantObject = new restaurantObject
-                                (id,false,name,cuisines,average_cost_for_two,thumb,aggregate_rating,votes
-                                        ,address,city,latitude,longitude);
+                                (id, false, name, cuisines, average_cost_for_two, thumb, aggregate_rating, votes
+                                        , address, city, latitude, longitude);
 
 
                         restaurantObjectDbDao rest = appDatabase.restaurantObjectDbDao();
@@ -173,8 +171,8 @@ public class Tab1Fragment extends Fragment implements
 
                         RestaurantObjectDb restaurantObjectDb =
                                 new RestaurantObjectDb
-                                        (id,false,name,cuisines,average_cost_for_two,aggregate_rating,votes,
-                                                address,city,latitude,longitude,thumb);
+                                        (id, false, name, cuisines, average_cost_for_two, aggregate_rating, votes,
+                                                address, city, latitude, longitude, thumb);
 
                         restaurantObjectDbList.add(restaurantObjectDb);
                         System.out.println("SADSADSA" + restaurantObjectDb.getName());
@@ -235,7 +233,8 @@ public class Tab1Fragment extends Fragment implements
                             latList.remove(a);
                             lonList.remove(a);
                         }
-                    }restaurantObjects.clear();
+                    }
+                    restaurantObjects.clear();
 
                     System.out.println(restaurantObjectDbList.size() + "2.deneme yeri");
 
@@ -254,20 +253,15 @@ public class Tab1Fragment extends Fragment implements
                             String detailsCity;
                             int detailsCost;
 
-                            System.out.println(restaurantObjectDbList.size() + "for dışı yeri");
 
+                            for (int b = 0; b < restaurantObjectDbList.size(); b++) {
 
-                            for(int b=0;b <restaurantObjectDbList.size();b++){
-
-                                Log.d(TAG, "FOR İÇ: " + restaurantObjectDbList.size());
-
-
-                                Log.d(TAG,"marker.fj()");
+                                Log.d(TAG, "marker.fj()");
                                 System.out.println(marker.getPosition());
                                 System.out.println(restaurantObjectDbList.get(0).getLatitude());
                                 System.out.println(marker.getPosition().latitude);
-                                if(restaurantObjectDbList.get(b).getLatitude() == marker.getPosition().latitude && restaurantObjectDbList.get(b).getLongitude() == marker.getPosition().longitude){
-                                    Log.d(TAG,"marker.getPosition()");
+                                if (restaurantObjectDbList.get(b).getLatitude() == marker.getPosition().latitude && restaurantObjectDbList.get(b).getLongitude() == marker.getPosition().longitude) {
+                                    Log.d(TAG, "marker.getPosition()");
 
                                     detailsName = restaurantObjectDbList.get(b).getName();
                                     System.out.println(detailsName);
@@ -277,12 +271,12 @@ public class Tab1Fragment extends Fragment implements
                                     detailsCity = restaurantObjectDbList.get(b).getCity();
                                     detailsCost = restaurantObjectDbList.get(b).getAverage_cost_for_two();
 
-                                    intentDetails.putExtra("Title",detailsName);
-                                    intentDetails.putExtra("Cuisine",detailsCuisine);
-                                    intentDetails.putExtra("Votes",detailsVotes);
-                                    intentDetails.putExtra("Thumb",detailsThumb);
-                                    intentDetails.putExtra("City",detailsCity);
-                                    intentDetails.putExtra("Cost",detailsCost);
+                                    intentDetails.putExtra("Title", detailsName);
+                                    intentDetails.putExtra("Cuisine", detailsCuisine);
+                                    intentDetails.putExtra("Votes", detailsVotes);
+                                    intentDetails.putExtra("Thumb", detailsThumb);
+                                    intentDetails.putExtra("City", detailsCity);
+                                    intentDetails.putExtra("Cost", detailsCost);
 
                                     Log.d(TAG, "onInfoWindowClick: " + detailsCity + detailsName);
                                 }
@@ -291,10 +285,8 @@ public class Tab1Fragment extends Fragment implements
                             startActivity(intentDetails);
 
 
-
                         }
                     });
-
 
 
                 } catch (JSONException e) {
@@ -384,39 +376,42 @@ public class Tab1Fragment extends Fragment implements
         return view;
 
     }
-    public boolean checkUserLocationPermission(){
-        if(ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION)){
-                ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},Request_User_Location_Code);
-            }else{
-                ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},Request_User_Location_Code);
+
+    public boolean checkUserLocationPermission() {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Request_User_Location_Code);
+            } else {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Request_User_Location_Code);
             }
             return false;
-        }else{
+        } else {
             return true;
         }
     }
 
-    public void onRequestPermissionResult(int requestcode,@NonNull String[] permissions,@NonNull int[] grantResults){
-        switch (requestcode){
+    public void onRequestPermissionResult(int requestcode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestcode) {
             case Request_User_Location_Code:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                        if(googleApiClient==null) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        if (googleApiClient == null) {
                             buildGoogleApiClient();
 
                         }
                         mMap.setMyLocationEnabled(true);
                     }
-                }else{
+                } else {
                     Toast.makeText(context, "Permission Denied... ", Toast.LENGTH_SHORT).show();
 
-                }return;
+                }
+                return;
         }
     }
-    protected synchronized void buildGoogleApiClient(){
-        googleApiClient =new GoogleApiClient.Builder(context)
+
+    protected synchronized void buildGoogleApiClient() {
+        googleApiClient = new GoogleApiClient.Builder(context)
                 .addConnectionCallbacks(Tab1Fragment.this)
                 .addOnConnectionFailedListener(Tab1Fragment.this)
                 .addApi(LocationServices.API)
@@ -424,12 +419,14 @@ public class Tab1Fragment extends Fragment implements
 
         googleApiClient.connect();
     }
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -440,11 +437,13 @@ public class Tab1Fragment extends Fragment implements
                     + " must implement OnFragmentInteractionListener");
         }
     }
+
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         LocationRequest locationRequest = new LocationRequest();
@@ -452,9 +451,8 @@ public class Tab1Fragment extends Fragment implements
         locationRequest.setFastestInterval(1100);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        if(ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-        {
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest,this);
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
 
         }
 
@@ -489,12 +487,10 @@ public class Tab1Fragment extends Fragment implements
         Double longiDouble = Double.valueOf(longiStr);
 
 
-
-
-        LatLng initialLoc = new  LatLng(latiDouble,longiDouble);
+        LatLng initialLoc = new LatLng(latiDouble, longiDouble);
         Marker currentUserLocationMarker = mMap.addMarker(new MarkerOptions()
                 .position(initialLoc));
-        if(currentUserLocationMarker != null){
+        if (currentUserLocationMarker != null) {
             currentUserLocationMarker.remove();
         }
 
@@ -503,11 +499,10 @@ public class Tab1Fragment extends Fragment implements
         markerOptions.title("User Current Location");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
 
-        if(googleApiClient != null)
-        {
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient,this);
+        if (googleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         }
 
     }

@@ -38,13 +38,13 @@ public class Tab2Adapter extends RecyclerView.Adapter<Tab2Adapter.ViewHolder> {
     public void onBindViewHolder(Tab2Adapter.ViewHolder holder, int position) {
 
         RestaurantObjectDb item = restaurantObjectDbList.get(position);
-        if(item.getThumb()!=null && !item.getThumb().isEmpty()){
+        if (item.getThumb() != null && !item.getThumb().isEmpty()) {
             Picasso.get()
                     .load(item.getThumb())
                     .noFade()
                     .into(holder.thumb);
-        }else{
-            holder.thumb.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.food_thumb));
+        } else {
+            holder.thumb.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.food_thumb));
         }
 
         RestaurantObjectDb restaurantObjectDb = restaurantObjectDbList.get(position);
@@ -64,7 +64,7 @@ public class Tab2Adapter extends RecyclerView.Adapter<Tab2Adapter.ViewHolder> {
         public ImageView thumb;
 
 
-         public ViewHolder(View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name);
             cuisine = itemView.findViewById(R.id.cuisine);

@@ -5,10 +5,11 @@ public class CardViewItems {
 
     private String titles;
 
-    public CardViewItems(String titles){
-        this.titles= titles;
+    public CardViewItems(String titles) {
+        this.titles = titles;
     }
-    public String getTitle(){
+
+    public String getTitle() {
         return titles;
     }
 

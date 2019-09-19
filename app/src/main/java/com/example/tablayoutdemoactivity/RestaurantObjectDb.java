@@ -19,7 +19,8 @@ public class RestaurantObjectDb implements Serializable {
 
     //public RestaurantObjectDb(String name){this.name = name;}
     @Ignore
-    public  RestaurantObjectDb(){}
+    public RestaurantObjectDb() {
+    }
 
     public RestaurantObjectDb(int id, boolean fav, String name, String cuisines,
                               int average_cost_for_two, int aggregate_rating, int votes,
@@ -46,7 +47,8 @@ public class RestaurantObjectDb implements Serializable {
     private int id;
 
     @ColumnInfo(name = "Favourites")
-    @Nullable private boolean fav;
+    @Nullable
+    private boolean fav;
 
 
     @ColumnInfo(name = "Restaurant Names")
@@ -71,14 +73,15 @@ public class RestaurantObjectDb implements Serializable {
     private String city;
 
     @ColumnInfo(name = "Lat")
-    @NonNull private double latitude;
+    @NonNull
+    private double latitude;
 
     @ColumnInfo(name = "Long")
-    @NonNull private double longitude;
+    @NonNull
+    private double longitude;
 
     @ColumnInfo(name = "Thumb URL")
     private String thumb;
-
 
 
     public boolean isFav() {

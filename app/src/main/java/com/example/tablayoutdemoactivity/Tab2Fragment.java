@@ -32,7 +32,8 @@ public class Tab2Fragment extends Fragment {
     RecyclerView recyclerView;
 
 
-    public Tab2Fragment() {}
+    public Tab2Fragment() {
+    }
 
 
     @Override
@@ -41,7 +42,7 @@ public class Tab2Fragment extends Fragment {
 
         final View view = inflater.inflate(R.layout.fragment_tab2, container, false);
 
-        myDatabase= Room.databaseBuilder(getContext(),AppDatabase.class,"database")
+        myDatabase = Room.databaseBuilder(getContext(), AppDatabase.class, "database")
                 .allowMainThreadQueries()
                 .build();
 
@@ -51,8 +52,7 @@ public class Tab2Fragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         //buryaı get Favs la degiştir
-        favourites = myDatabase.restaurantObjectDbDao().getAll();
-
+        favourites = myDatabase.restaurantObjectDbDao().getFavs();
 
 
         Tab2Adapter adapter = new Tab2Adapter(favourites);

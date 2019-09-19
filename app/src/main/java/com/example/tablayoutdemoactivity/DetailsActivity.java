@@ -30,23 +30,24 @@ public class DetailsActivity extends AppCompatActivity {
 
     List<RestaurantObjectDb> restaurantObjectDbList = new ArrayList<RestaurantObjectDb>();
 
-    private void setFavs(String title,String cuisine,String city,AppDatabase db){
+    private void setFavs(String title, String cuisine, String city, AppDatabase db) {
 
 
-        for(int j=0;j<restaurantObjectDbList.size();j++){
+        for (int j = 0; j < restaurantObjectDbList.size(); j++) {
             RestaurantObjectDb rest = restaurantObjectDbList.get(j);
 
-            if(restaurantObjectDbList.get(j).getName() == title
-                    && restaurantObjectDbList.get(j).getCuisines() == cuisine &&
-                  restaurantObjectDbList.get(j).getCity() == city)
-                    {
+            System.out.println("AAAAAAAAAAA" + restaurantObjectDbList.get(j).getName());
 
-                        if(restaurantObjectDbList.get(j).isFav() == false){
-                            rest.setFav(true);
-                        }
+            System.out.println("BBBBBBBBBBB" + title);
 
-            rest = restaurantObjectDbList.get(j);
-                db.restaurantObjectDbDao().update(rest);
+            if (restaurantObjectDbList.get(j).getName().equals(title)) {
+
+
+                if (!restaurantObjectDbList.get(j).isFav()) {
+                    rest.setFav(true);
+                }
+
+                db.restaurantObjectDbDao().insert(rest);
 
             }
 
@@ -62,7 +63,7 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
 
-        myDatabase= Room.databaseBuilder(this,AppDatabase.class,"database")
+        myDatabase = Room.databaseBuilder(this, AppDatabase.class, "database")
                 .enableMultiInstanceInvalidation()
                 .allowMainThreadQueries()
                 .build();
@@ -78,17 +79,13 @@ public class DetailsActivity extends AppCompatActivity {
         final String city = intent.getStringExtra("City");
 
 
-
-
-
-
         addFav = (Button) findViewById(R.id.addFav);
         addFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
 
-                setFavs(title,cuisine,city,myDatabase);
+                setFavs(title, cuisine, city, myDatabase);
 
                 /*Intent i = new Intent(DetailsActivity.this, Tab2Fragment.class);
                 startActivityForResult(i,REQUEST_CODE);*/

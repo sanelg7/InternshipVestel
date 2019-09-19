@@ -13,10 +13,10 @@ import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity
         implements Tab1Fragment.OnFragmentInteractionListener/*,
-                    Tab2Fragment.OnFragmentInteractionListener*/{
+                    Tab2Fragment.OnFragmentInteractionListener*/ {
 
     @Override
-    public void onFragmentInteraction(Uri uri){
+    public void onFragmentInteraction(Uri uri) {
         //you can leave it empty
     }
 

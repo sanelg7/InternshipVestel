@@ -16,26 +16,31 @@ public class restaurantObject {
     double longitude;
 
     public restaurantObject
-            (int id,boolean fav,String name,String cuisines,
-             int average_cost_for_two,String thumb,int aggregate_rating,int votes,
-             String address,String city,double latitude,double longitude){
+            (int id, boolean fav, String name, String cuisines,
+             int average_cost_for_two, String thumb, int aggregate_rating, int votes,
+             String address, String city, double latitude, double longitude) {
 
         this.id = id;
         this.fav = fav;
-        this.name =  name;
+        this.name = name;
         this.cuisines = cuisines;
         this.average_cost_for_two = average_cost_for_two;
         this.thumb = thumb;
         this.aggregate_rating = aggregate_rating;
         this.votes = votes;
-        this.address=address;
-        this.city=city;
-        this.latitude=latitude;
-        this.longitude=longitude;
+        this.address = address;
+        this.city = city;
+        this.latitude = latitude;
+        this.longitude = longitude;
 
     }
-    public restaurantObject(){}
-    public restaurantObject(String name){this.name = name;}
+
+    public restaurantObject() {
+    }
+
+    public restaurantObject(String name) {
+        this.name = name;
+    }
 
 
     public int getId() {
@@ -133,10 +138,6 @@ public class restaurantObject {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
-
-
-
-
 
 
 }
