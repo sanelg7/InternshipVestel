@@ -100,7 +100,7 @@ public class Tab1Fragment extends Fragment implements
 
     private void startApiRequest() {
 
-       final ArrayList<RestaurantObjectDb>  restaurantObjectDbList =new ArrayList<RestaurantObjectDb>();
+        final ArrayList<RestaurantObjectDb>  restaurantObjectDbList =new ArrayList<RestaurantObjectDb>();
 
 
         lat = "lat=" + currentLocationLat;
@@ -118,21 +118,26 @@ public class Tab1Fragment extends Fragment implements
 
         Log.d(tag, url);
 
-        final AppDatabase appDatabase = Room.databaseBuilder(context,AppDatabase.class,"database")
-                .allowMainThreadQueries()
-                .build();
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,url,
                 null, new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject response) {
+
+                final AppDatabase appDatabase = Room.databaseBuilder(context,AppDatabase.class,"database")
+                        .allowMainThreadQueries()
+                        .enableMultiInstanceInvalidation()
+                        .build();
                 Log.d(tag, response.toString());
                 try {
                     JSONArray jsonArray = response.getJSONArray("restaurants");
 
+
+
                     //making new Json with the attributes we need
                     //putting restaurant objects into arraylist
+                    restaurantObjectDbList.clear();
 
                     for(int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -169,19 +174,23 @@ public class Tab1Fragment extends Fragment implements
                         RestaurantObjectDb restaurantObjectDb =
                                 new RestaurantObjectDb
                                         (id,false,name,cuisines,average_cost_for_two,aggregate_rating,votes,
-                                        address,city,latitude,longitude,thumb);
+                                                address,city,latitude,longitude,thumb);
 
                         restaurantObjectDbList.add(restaurantObjectDb);
                         System.out.println("SADSADSA" + restaurantObjectDb.getName());
                         System.out.println(restaurantObjectDbList.size());
 
+                        appDatabase.restaurantObjectDbDao().insert(restaurantObjectDb);
+                        System.out.println("ENEGN");
+                        System.out.println(appDatabase.restaurantObjectDbDao().getAll().get(0).getName());
 
-                        db_size = rest.getCount();
+                        db_size = restaurantObjectDbList.size();
                         for (int k = 0; k < db_size; k++) {
-                            if (restaurantObjectDb.getId() == rest.getAll().get(i).getId()) {
-                                rest.update(restaurantObjectDb);
+                            if (restaurantObjectDbList.get(k).getId() == appDatabase.restaurantObjectDbDao().getAll().get(k).getId()) {
+                                appDatabase.restaurantObjectDbDao().update(restaurantObjectDb);
                             } else {
-                                rest.insert(restaurantObjectDb);
+                                System.out.println("insert");
+                                appDatabase.restaurantObjectDbDao().insert(restaurantObjectDb);
 
                             }
 
@@ -233,65 +242,64 @@ public class Tab1Fragment extends Fragment implements
 
                     mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 
-                            public void onInfoWindowClick(Marker marker) {
+                        public void onInfoWindowClick(Marker marker) {
 
 
-                                Intent intentDetails = new Intent(context, DetailsActivity.class);
+                            Intent intentDetails = new Intent(context, DetailsActivity.class);
 
-                                String detailsName;
-                                String detailsCuisine;
-                                int detailsVotes;
-                                String detailsThumb;
-                                String detailsCity;
-                                int detailsCost;
+                            String detailsName;
+                            String detailsCuisine;
+                            int detailsVotes;
+                            String detailsThumb;
+                            String detailsCity;
+                            int detailsCost;
 
-                                System.out.println(restaurantObjectDbList.size() + "for dışı yeri");
-
-
-                                for(int b=0;b <restaurantObjectDbList.size();b++){
-
-                                    Log.d(TAG, "FOR İÇ: " + restaurantObjectDbList.size());
+                            System.out.println(restaurantObjectDbList.size() + "for dışı yeri");
 
 
-                                    Log.d(TAG,"marker.fj()");
-                                    System.out.println(marker.getPosition());
-                                    System.out.println(restaurantObjectDbList.get(0).getLatitude());
-                                    System.out.println(marker.getPosition().latitude);
-                                    if(restaurantObjectDbList.get(b).getLatitude() == marker.getPosition().latitude && restaurantObjectDbList.get(b).getLongitude() == marker.getPosition().longitude){
-                                        Log.d(TAG,"marker.getPosition()");
+                            for(int b=0;b <restaurantObjectDbList.size();b++){
 
-                                        detailsName = restaurantObjectDbList.get(b).getName();
-                                        System.out.println(detailsName);
-                                        detailsCuisine = restaurantObjectDbList.get(b).getCuisines();
-                                        detailsVotes = restaurantObjectDbList.get(b).getVotes();
-                                        detailsThumb = restaurantObjectDbList.get(b).getThumb();
-                                        detailsCity = restaurantObjectDbList.get(b).getCity();
-                                        detailsCost = restaurantObjectDbList.get(b).getAverage_cost_for_two();
+                                Log.d(TAG, "FOR İÇ: " + restaurantObjectDbList.size());
 
-                                        intentDetails.putExtra("Title",detailsName);
-                                        intentDetails.putExtra("Cuisine",detailsCuisine);
-                                        intentDetails.putExtra("Votes",detailsVotes);
-                                        intentDetails.putExtra("Thumb",detailsThumb);
-                                        intentDetails.putExtra("City",detailsCity);
-                                        intentDetails.putExtra("Cost",detailsCost);
 
-                                        Log.d(TAG, "onInfoWindowClick: " + detailsCity + detailsName);
-                                    }
+                                Log.d(TAG,"marker.fj()");
+                                System.out.println(marker.getPosition());
+                                System.out.println(restaurantObjectDbList.get(0).getLatitude());
+                                System.out.println(marker.getPosition().latitude);
+                                if(restaurantObjectDbList.get(b).getLatitude() == marker.getPosition().latitude && restaurantObjectDbList.get(b).getLongitude() == marker.getPosition().longitude){
+                                    Log.d(TAG,"marker.getPosition()");
 
+                                    detailsName = restaurantObjectDbList.get(b).getName();
+                                    System.out.println(detailsName);
+                                    detailsCuisine = restaurantObjectDbList.get(b).getCuisines();
+                                    detailsVotes = restaurantObjectDbList.get(b).getVotes();
+                                    detailsThumb = restaurantObjectDbList.get(b).getThumb();
+                                    detailsCity = restaurantObjectDbList.get(b).getCity();
+                                    detailsCost = restaurantObjectDbList.get(b).getAverage_cost_for_two();
+
+                                    intentDetails.putExtra("Title",detailsName);
+                                    intentDetails.putExtra("Cuisine",detailsCuisine);
+                                    intentDetails.putExtra("Votes",detailsVotes);
+                                    intentDetails.putExtra("Thumb",detailsThumb);
+                                    intentDetails.putExtra("City",detailsCity);
+                                    intentDetails.putExtra("Cost",detailsCost);
+
+                                    Log.d(TAG, "onInfoWindowClick: " + detailsCity + detailsName);
                                 }
-                                startActivity(intentDetails);
-
-
 
                             }
-                        });
+                            startActivity(intentDetails);
+
+
+
+                        }
+                    });
 
 
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                restaurantObjectDbList.clear();
                 Log.d(TAG, "Marker list count should be 0 now... ");
             }
         }, new Response.ErrorListener() {
@@ -326,17 +334,17 @@ public class Tab1Fragment extends Fragment implements
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_tab1, container, false);
-         context = getContext();
-         Button button = view.findViewById(R.id.setMarkersButton);
+        context = getContext();
+        Button button = view.findViewById(R.id.setMarkersButton);
 
-         button.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View view) {
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                    mMap.clear();
-                 startApiRequest();
-             }
-         });
+                mMap.clear();
+                startApiRequest();
+            }
+        });
 
 
         final SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SuppoprtMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
@@ -370,52 +378,52 @@ public class Tab1Fragment extends Fragment implements
                     checkUserLocationPermission();
                 }
             }
-            });
+        });
         startApiRequest();
 
         return view;
 
+    }
+    public boolean checkUserLocationPermission(){
+        if(ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION)){
+                ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},Request_User_Location_Code);
+            }else{
+                ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},Request_User_Location_Code);
+            }
+            return false;
+        }else{
+            return true;
         }
-                public boolean checkUserLocationPermission(){
-                if(ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED){
-                    if(ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION)){
-                        ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},Request_User_Location_Code);
-                    }else{
-                        ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},Request_User_Location_Code);
+    }
+
+    public void onRequestPermissionResult(int requestcode,@NonNull String[] permissions,@NonNull int[] grantResults){
+        switch (requestcode){
+            case Request_User_Location_Code:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                        if(googleApiClient==null) {
+                            buildGoogleApiClient();
+
+                        }
+                        mMap.setMyLocationEnabled(true);
                     }
-                    return false;
                 }else{
-                    return true;
-                }
-            }
+                    Toast.makeText(context, "Permission Denied... ", Toast.LENGTH_SHORT).show();
 
-            public void onRequestPermissionResult(int requestcode,@NonNull String[] permissions,@NonNull int[] grantResults){
-                switch (requestcode){
-                    case Request_User_Location_Code:
-                        if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                            if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                                if(googleApiClient==null) {
-                                    buildGoogleApiClient();
+                }return;
+        }
+    }
+    protected synchronized void buildGoogleApiClient(){
+        googleApiClient =new GoogleApiClient.Builder(context)
+                .addConnectionCallbacks(Tab1Fragment.this)
+                .addOnConnectionFailedListener(Tab1Fragment.this)
+                .addApi(LocationServices.API)
+                .build();
 
-                                }
-                                mMap.setMyLocationEnabled(true);
-                            }
-                        }else{
-                            Toast.makeText(context, "Permission Denied... ", Toast.LENGTH_SHORT).show();
-
-                        }return;
-                }
-            }
-            protected synchronized void buildGoogleApiClient(){
-                googleApiClient =new GoogleApiClient.Builder(context)
-                        .addConnectionCallbacks(Tab1Fragment.this)
-                        .addOnConnectionFailedListener(Tab1Fragment.this)
-                        .addApi(LocationServices.API)
-                        .build();
-
-                googleApiClient.connect();
-            }
+        googleApiClient.connect();
+    }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
@@ -17,8 +18,9 @@ public class RestaurantObjectDb implements Serializable {
     public boolean defaultBool = false;
 
     //public RestaurantObjectDb(String name){this.name = name;}
+    @Ignore
+    public  RestaurantObjectDb(){}
 
-public  RestaurantObjectDb(){}
     public RestaurantObjectDb(int id, boolean fav, String name, String cuisines,
                               int average_cost_for_two, int aggregate_rating, int votes,
                               String address, String city, double latitude, double longitude,

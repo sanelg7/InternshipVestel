@@ -30,18 +30,26 @@ public class DetailsActivity extends AppCompatActivity {
 
     List<RestaurantObjectDb> restaurantObjectDbList = new ArrayList<RestaurantObjectDb>();
 
-    private void setFavs(String title,String cuisine,String city){
+    private void setFavs(String title,String cuisine,String city,AppDatabase db){
 
 
         for(int j=0;j<restaurantObjectDbList.size();j++){
-            RestaurantObjectDb rest ;
+            RestaurantObjectDb rest = restaurantObjectDbList.get(j);
 
-            if(restaurantObjectDbList.get(j).getName() == title &&
-                    restaurantObjectDbList.get(j).getCuisines() == cuisine &&
-                    restaurantObjectDbList.get(j).getCity() == city){
-                restaurantObjectDbList.get(j).setFav(true);
-            }rest = restaurantObjectDbList.get(j);
-            rest.setFav(true);
+            if(restaurantObjectDbList.get(j).getName() == title
+                    && restaurantObjectDbList.get(j).getCuisines() == cuisine &&
+                  restaurantObjectDbList.get(j).getCity() == city)
+                    {
+
+                        if(restaurantObjectDbList.get(j).isFav() == false){
+                            rest.setFav(true);
+                        }
+
+            rest = restaurantObjectDbList.get(j);
+                db.restaurantObjectDbDao().update(rest);
+
+            }
+
         }
     }
 
@@ -54,7 +62,10 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
 
-        myDatabase= Room.databaseBuilder(this,AppDatabase.class,"database").allowMainThreadQueries().build();
+        myDatabase= Room.databaseBuilder(this,AppDatabase.class,"database")
+                .enableMultiInstanceInvalidation()
+                .allowMainThreadQueries()
+                .build();
 
         restaurantObjectDbList = myDatabase.restaurantObjectDbDao().getAll();
 
@@ -77,10 +88,10 @@ public class DetailsActivity extends AppCompatActivity {
             public void onClick(View view) {
 
 
-                setFavs(title,cuisine,city);
+                setFavs(title,cuisine,city,myDatabase);
 
-                Intent i = new Intent(DetailsActivity.this, Tab2Fragment.class);
-                startActivityForResult(i,REQUEST_CODE);
+                /*Intent i = new Intent(DetailsActivity.this, Tab2Fragment.class);
+                startActivityForResult(i,REQUEST_CODE);*/
             }
         });
         rateButton = (Button) findViewById(R.id.rateButton);
@@ -97,16 +108,16 @@ public class DetailsActivity extends AppCompatActivity {
 
         restName = (TextView) findViewById(R.id.rest_name);
         if (title != null) {
-            restName.setText(title);
+            restName.setText("Restaurant Name: " + title);
         } else {
-            restName.setText("No information available...");
+            restName.setText("Restaurant Name: No information available...");
         }
         cuisineInfo = (TextView) findViewById(R.id.rest_info);
         if (cuisine != null) {
-            cuisineInfo.setText(cuisine);
+            cuisineInfo.setText("Cuisine Type: " + cuisine);
 
         } else {
-            cuisineInfo.setText("No information available...");
+            cuisineInfo.setText("Restaurant Name: No information available...");
         }
 
 

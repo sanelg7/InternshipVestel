@@ -9,5 +9,9 @@
     <string name="permission">Permission Denied...</string>
     <string name="setMarkerButtonString">Search Nearby</string>
 
+    <string name="votes">Votes: </string>
+    <string name="cost_two">Cost for two: </string>
+
+
 
 </resources>

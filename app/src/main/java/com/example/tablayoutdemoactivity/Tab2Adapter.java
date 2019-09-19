@@ -18,7 +18,7 @@ import java.util.List;
 public class Tab2Adapter extends RecyclerView.Adapter<Tab2Adapter.ViewHolder> {
 
 
-    private Context context; ;
+    private Context context;
 
     private List<RestaurantObjectDb> restaurantObjectDbList;
 
@@ -69,9 +69,6 @@ public class Tab2Adapter extends RecyclerView.Adapter<Tab2Adapter.ViewHolder> {
             name = itemView.findViewById(R.id.name);
             cuisine = itemView.findViewById(R.id.cuisine);
             thumb = itemView.findViewById(R.id.imgThumb);
-
-           // Picasso.get().load(restaurantObjectDbList.get).into(thumb);
-
 
         }
     }

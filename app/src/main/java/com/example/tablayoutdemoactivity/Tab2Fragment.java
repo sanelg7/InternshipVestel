@@ -25,6 +25,8 @@ import java.util.Observable;
 
 public class Tab2Fragment extends Fragment {
 
+    String tag;
+
     List<RestaurantObjectDb> favourites;
     public static AppDatabase myDatabase;
     RecyclerView recyclerView;
@@ -39,58 +41,25 @@ public class Tab2Fragment extends Fragment {
 
         final View view = inflater.inflate(R.layout.fragment_tab2, container, false);
 
-        myDatabase= Room.databaseBuilder(getContext(),AppDatabase.class,"database").allowMainThreadQueries().build();
+        myDatabase= Room.databaseBuilder(getContext(),AppDatabase.class,"database")
+                .allowMainThreadQueries()
+                .build();
 
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        favourites = myDatabase.restaurantObjectDbDao().getFavs();
+
+        //buryaı get Favs la degiştir
+        favourites = myDatabase.restaurantObjectDbDao().getAll();
+
+
 
         Tab2Adapter adapter = new Tab2Adapter(favourites);
         recyclerView.setAdapter(adapter);
-
+        Log.d(tag, "onCreateView: " + favourites.size());
         return view;
     }
-
-
-
-
-
-
-    /* List<RestaurantObjectDb> rest;
-    public static AppDatabase myDatabase;
-    Tab2Adapter tab2Adapter = new Tab2Adapter(rest);
-    RecyclerView recyclerView;
-
-
-
-
-    public Tab2Fragment() {}
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-
-        final View view = inflater.inflate(R.layout.fragment_tab2, container, false);
-
-
-
-        myDatabase= Room.databaseBuilder(getContext(),AppDatabase.class,"database").allowMainThreadQueries().build();
-
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        rest = myDatabase.restaurantObjectDbDao().getAll();
-
-        Tab2Adapter ca = new Tab2Adapter(rest);
-        recyclerView.setAdapter(ca);
-
-        return view;
-    }*/
 
 }
 
