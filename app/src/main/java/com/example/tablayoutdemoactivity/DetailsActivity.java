@@ -27,6 +27,8 @@ public class DetailsActivity extends AppCompatActivity {
     private TextView costForTwo;
     private TextView cityName;
     private Button addFav;
+    private String costStr = "Cost for two: ";
+    private String voteStr = "Votes: ";
 
     List<RestaurantObjectDb> restaurantObjectDbList = new ArrayList<RestaurantObjectDb>();
 
@@ -35,10 +37,6 @@ public class DetailsActivity extends AppCompatActivity {
 
         for (int j = 0; j < restaurantObjectDbList.size(); j++) {
             RestaurantObjectDb rest = restaurantObjectDbList.get(j);
-
-            System.out.println("AAAAAAAAAAA" + restaurantObjectDbList.get(j).getName());
-
-            System.out.println("BBBBBBBBBBB" + title);
 
             if (restaurantObjectDbList.get(j).getName().equals(title)) {
 
@@ -120,7 +118,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         restVote = (TextView) findViewById(R.id.rest_rating);
         if (String.valueOf(vote) != null) {
-            restVote.setText(String.valueOf(vote));
+            restVote.setText(voteStr + String.valueOf(vote));
 
         } else {
             restVote.setText("No information available...");
@@ -128,7 +126,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         costForTwo = (TextView) findViewById(R.id.cost_for_two);
         if (String.valueOf(cost) != null) {
-            costForTwo.setText(String.valueOf(cost));
+            costForTwo.setText(costStr + String.valueOf(cost));
         } else {
             costForTwo.setText("No information available...");
         }
